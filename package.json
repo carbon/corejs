@@ -1,12 +1,12 @@
 {
-  "name": "connector",
+  "name": "corejs",
   "version": "1.0.0",
-  "main": "lib/connector.js",
+  "main": "lib/corejs.js",
   "author": "Jason Nelson",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/carbon/connector.git"
+    "url": "git://github.com/carbon/corejs.git"
   },
-  "homepage": "https://github.com/carbon/connector"
+  "homepage": "https://github.com/carbon/corejs"
 }

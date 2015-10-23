@@ -8,6 +8,6 @@
     "outDir": "lib/"
   },
   "files": [
-    "src/connector.ts"
+    "src/corejs.ts"
   ]
 }

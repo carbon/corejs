@@ -1,0 +1,12 @@
+{
+  "name": "connector",
+  "version": "1.0.2",
+  "main": "lib/connector.js",
+  "author": "Jason Nelson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/carbon/connector.git"
+  },
+  "homepage": "https://github.com/carbon/connector"
+}

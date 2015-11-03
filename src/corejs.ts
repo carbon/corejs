@@ -11,6 +11,20 @@ module Carbon {
 
   export var controllerFactory = controllers;
 
+  class Observer {
+    constructor(public element: HTMLElement | Window, public type, public handler, public useCapture?: boolean) {
+      this.element.addEventListener(type, handler, useCapture);     
+    }
+      
+    stop() {
+      this.element.removeEventListener(this.type, this.handler, this.useCapture)
+    }
+  }
+  
+  export var observe = (observable: HTMLElement | Window, type, handler, useCapture?: boolean) : Observer => {   
+    return new Observer(observable, type, handler, useCapture);
+  }
+  
   export class Reactive {
     static instances = new Map<string, Reactive>();
 
@@ -117,9 +131,9 @@ module Carbon {
     }
 
     trigger(e, data?) {
-      for (var i = 0, len = this.listeners.length; i < len; i++) {
-        this.listeners[i].fire(e, data);
-      }
+     for (var i = 0, len = this.listeners.length; i < len; i++) {
+       this.listeners[i].fire(e, data);
+     }
     }
 
     dispose() {
@@ -346,7 +360,7 @@ module Carbon {
     render(data) {
       var nodes = this.clone().childNodes;
 
-      for(var i = 0, len = nodes.length; i < len; i++) {
+      for (var i = 0, len = nodes.length; i < len; i++) {
         var node = nodes[i];
 
         // First non-text node

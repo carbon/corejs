@@ -1,0 +1,29 @@
+<html>
+  <head>
+  
+    <style>body { background-color: #ccc; } </style>
+  </head>
+	<body>
+    
+
+  <script src="../lib/corejs.js"></script>
+
+
+	<script>
+	var e = Carbon.Reactive.get('piece:built');
+  
+  console.log(e);
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    console.log('drain');
+     
+    e.drain();
+  });
+
+
+	</script>
+
+	</body>
+
+</html>

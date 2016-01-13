@@ -286,9 +286,13 @@ module Carbon {
 
       var controller = Carbon.controllerFactory.get(controllerName);
 
-      if (!controller) throw new Error('No controller named:' + controllerName);
-
-      controller[actionName](e);
+      if (!controller) throw new Error(`Controller#${controllerName} not registered`);
+      
+      var func = controller[actionName];
+      
+      if (!func) throw new Error(`Action#${controllerName}:${actionName} not registered`);
+      
+      func(e);
     },
 
     _getActionElement(el, type) {

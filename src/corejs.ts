@@ -21,7 +21,7 @@ module Carbon {
     }
   }
   
-  export var observe = (observable: HTMLElement | Window, type, handler, useCapture?: boolean) : Observer => {   
+  export function observe(observable: HTMLElement | Window, type, handler, useCapture?: boolean) : Observer {   
     return new Observer(observable, type, handler, useCapture);
   }
   
@@ -311,7 +311,7 @@ module Carbon {
     time: number;
     defer: any;
 
-    constructor(time, immediate) {
+    constructor(time, immediate: boolean) {
       this.time = time;
       this.defer = $.Deferred();
 
@@ -330,7 +330,6 @@ module Carbon {
       this.timeout = setTimeout(this.defer.resolve.bind(this), this.time);
     }
   }
-
 
   export class Template {
     static instances = new Map<string, Template>();
@@ -364,7 +363,7 @@ module Carbon {
       this.content = this.element.content || this.createFragmentForChildren();
     }
 
-    createFragmentForChildren() {
+    createFragmentForChildren() : DocumentFragment {
       var frag = document.createDocumentFragment();
 
       var children = this.element.children;
@@ -378,27 +377,26 @@ module Carbon {
       return frag;
     }
 
-    render(data) {
+    render(data) : HTMLElement {
       var nodes = this.clone().childNodes;
 
       for (var i = 0, len = nodes.length; i < len; i++) {
         var node = nodes[i];
 
         // First non-text node
-        if(node.nodeType != 3) {
+        if (node.nodeType != 3) {
           if (data) {
-            var result = this.replace(node.outerHTML, data);
+            var result = this._replace(node.outerHTML, data);
 
-
-            return $(result);
+            return DOM.parse(result);
           }
 
-          return $(node);
+          return node;
         }
       }
     }
 
-    replace(text: string, data: any) {
+    _replace(text: string, data: any) {
       for (var item in data) {
         text = text.replace(new RegExp('{{' + item + '}}', 'g'), data[item]);
       }
@@ -408,6 +406,18 @@ module Carbon {
 
     clone() {
       return this.content.cloneNode(/*deepClone*/ true);
+    }
+  }
+
+  export module DOM {
+    // TODO: Support fragments
+  
+    export function parse(html: string) : HTMLElement {
+      var el = document.createElement('div');
+      
+      el.innerHTML = html;
+      
+      return <HTMLElement> el.firstChild;
     }
   }
 }

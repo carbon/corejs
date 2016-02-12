@@ -15,9 +15,13 @@ module Carbon {
     constructor(public element: HTMLElement | Window, public type, public handler, public useCapture?: boolean) {
       this.element.addEventListener(type, handler, useCapture);     
     }
-      
+    
+    start() {
+      this.element.addEventListener(this.type, this.handler, this.useCapture);
+    }
+    
     stop() {
-      this.element.removeEventListener(this.type, this.handler, this.useCapture)
+      this.element.removeEventListener(this.type, this.handler, this.useCapture);
     }
   }
   
@@ -270,12 +274,12 @@ module Carbon {
     _execute(e, action: string) {
       var controllerName, actionName;
 
-      if (action.includes(':')) {
+      if (action.indexOf(':') > -1) {
         controllerName = action.split(':')[0];
         actionName = action.split(':')[1];
 
         // TODO: Parse args (arg, arg, arg)
-        if (controllerName.contains('#')) {
+        if (controllerName.indexOf('#') > -1) {
           e.id = controllerName.split('#')[1];
 
           controllerName = controllerName.split('#')[0];
@@ -310,38 +314,13 @@ module Carbon {
     }
   };
 
-  export class Timer {
-    timeout: number;
-    time: number;
-    defer: any;
-
-    constructor(time, immediate: boolean) {
-      this.time = time;
-      this.defer = $.Deferred();
-
-      this.defer.promise(this);
-
-      if (immediate) {
-        this.start();
-      }
-    }
-
-    cancel() {
-      clearTimeout(this.timeout);
-    }
-
-    start() {
-      this.timeout = setTimeout(this.defer.resolve.bind(this), this.time);
-    }
-  }
-
   export class Template {
     static instances = new Map<string, Template>();
 
     static get(name: string) : Template {
       var instance = Carbon.Template.instances.get(name);
 
-      if (instance === undefined) {
+      if (!instance) {
         instance = new Carbon.Template('#' + name);
 
         Carbon.Template.instances.set(name, instance)
@@ -421,7 +400,7 @@ module Carbon {
       
       el.innerHTML = html;
       
-      return <HTMLElement> el.firstChild;
+      return <HTMLElement>el.firstChild;
     }
   }
 }

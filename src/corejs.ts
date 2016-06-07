@@ -228,17 +228,17 @@ module Carbon {
       this.reactive.unsubscribe(this);
     }
   }
-
+  
   // A lightweight event listener / dispatcher
   export var ActionKit = {
     listeners: new Map<string, Function>(),
 
     dispatch(e) {
-      var match = Carbon.ActionKit._getActionElement(e.target, e.type);
+      let match = _getActionElement(e.target, e.type);
 
       if (!match) return;
 
-      var action = match.getAttribute('on-' + e.type);
+      let action = match.getAttribute('on-' + e.type);
 
       e.target = match;
 
@@ -256,7 +256,7 @@ module Carbon {
     },
 
     eventListener(e) {
-      var target = Carbon.ActionKit._getActionElement(e.target, e.type);
+      var target = _getActionElement(e.target, e.type);
 
       if (!target) return;
 
@@ -297,20 +297,6 @@ module Carbon {
       if (!func) throw new Error(`Action#${controllerName}:${actionName} not registered`);
       
       func(e);
-    },
-
-    _getActionElement(el, type) {
-      if (el.getAttribute('on-' + type)) return el;
-
-      for (var i = 0; i < 5; i++) { // Look upto 5 level up
-        el = el.parentElement;
-
-        if (!el) return null;
-
-        if (el.getAttribute('on-' + type)) return el;
-      }
-
-      return null;
     }
   };
 
@@ -337,7 +323,7 @@ module Carbon {
       this.element = document.querySelector(selector); // NATIVE element
 
       if(!this.element) {
-        console.log('No template matching ' + selector + ' found.');
+        console.log(`No template matching ${selector} found.`);
 
         return;
       }
@@ -392,6 +378,20 @@ module Carbon {
     }
   }
 
+  function _getActionElement(el, type) {
+    if (el.getAttribute('on-' + type)) return el;
+
+    for (var i = 0; i < 5; i++) { // Look upto 5 level up
+      el = el.parentElement;
+
+      if (!el) return null;
+
+      if (el.getAttribute('on-' + type)) return el;
+    }
+
+    return null;
+  };
+  
   export module DOM {
     // TODO: Support fragments
   
@@ -401,6 +401,62 @@ module Carbon {
       el.innerHTML = html;
       
       return <HTMLElement>el.firstChild;
+    }
+  }
+}
+
+
+module _ {
+ export function query(selector: string) : Element {
+    return document.querySelector(selector);
+  }
+
+  export function queryAll(selector: string) : Element[] {
+    return Array.from(document.querySelectorAll(selector));
+  }
+
+  export function trigger(element: Element | Window, name: string, detail?) : boolean {
+    return element.dispatchEvent(new CustomEvent(name, {
+      bubbles: true,
+      detail: detail
+    }));
+  }
+
+  export function addClass(element: Element, ...names: string[]) {
+    for (var name of names) {
+      element.classList.add(name);
+    }
+  }
+
+  export function removeClass(element: Element, ...names: string[]) {
+    for (var name of names) {
+      element.classList.remove(name);
+    }
+  }
+
+  export function one(element: Element, type: string, listener: EventListener) {
+    let func = function(e: Event) {
+      listener(e);
+
+      observer.stop();
+
+      observer = null;
+    }
+
+    let observer = new EventHandler(element, type, func, false);
+  }
+
+  export function observe(element: Element, type: string, handler: EventListener) : EventHandler {
+    return new EventHandler(element, type, handler, false);
+  }
+
+  export class EventHandler {
+    constructor(public element: Element | Window, public type, public handler, public options) {
+      this.element.addEventListener(type, handler, options);
+    }
+
+    stop() {
+      this.element.removeEventListener(this.type, this.handler, this.options)
     }
   }
 }

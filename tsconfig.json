@@ -8,6 +8,7 @@
     "outDir": "lib/"
   },
   "files": [
-    "src/corejs.ts"
+    "src/corejs.ts",
+    "src/es6.d.ts"
   ]
 }

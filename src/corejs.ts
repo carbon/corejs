@@ -11,24 +11,6 @@ module Carbon {
 
   export var controllerFactory = controllers;
 
-  class Observer {
-    constructor(public element: HTMLElement | Window, public type, public handler, public useCapture?: boolean) {
-      this.element.addEventListener(type, handler, useCapture);     
-    }
-    
-    start() {
-      this.element.addEventListener(this.type, this.handler, this.useCapture);
-    }
-    
-    stop() {
-      this.element.removeEventListener(this.type, this.handler, this.useCapture);
-    }
-  }
-  
-  export function observe(observable: HTMLElement | Window, type, handler, useCapture?: boolean) : Observer {   
-    return new Observer(observable, type, handler, useCapture);
-  }
-  
   export class Reactive {
     static instances = new Map<string, Reactive>();
 
@@ -167,7 +149,6 @@ module Carbon {
       }
     }
   }
-
 
   interface ListenerOptions {
     scope?  : string;
@@ -405,9 +386,8 @@ module Carbon {
   }
 }
 
-
 module _ {
- export function query(selector: string) : Element {
+  export function query(selector: string) : Element {
     return document.querySelector(selector);
   }
 
@@ -415,26 +395,40 @@ module _ {
     return Array.from(document.querySelectorAll(selector));
   }
 
-  export function trigger(element: Element | Window, name: string, detail?) : boolean {
-    return element.dispatchEvent(new CustomEvent(name, {
+  export function trigger(el: Element | Window, name: string, detail?): boolean {
+    return el.dispatchEvent(new CustomEvent(name, {
       bubbles: true,
       detail: detail
     }));
   }
 
-  export function addClass(element: Element, ...names: string[]) {
+  export function addClass(el: Element, ...names: string[]) {
     for (var name of names) {
-      element.classList.add(name);
+      el.classList.add(name);
     }
   }
 
-  export function removeClass(element: Element, ...names: string[]) {
+  export function removeClass(el: Element, ...names: string[]) {
     for (var name of names) {
-      element.classList.remove(name);
+      el.classList.remove(name);
+    }
+  }
+
+  export function toggleClass(el: Element, name: string, force?: boolean) {
+    if (force === true) {
+      el.classList.add(name);
+    }
+    else if (force === false) {
+      el.classList.remove(name);
+    }
+    else {
+      el.classList.toggle(name);
     }
   }
 
   export function one(element: Element, type: string, listener: EventListener) {
+    let observer: EventHandler;
+
     let func = function(e: Event) {
       listener(e);
 
@@ -443,7 +437,7 @@ module _ {
       observer = null;
     }
 
-    let observer = new EventHandler(element, type, func, false);
+    observer = new EventHandler(element, type, func, false);
   }
 
   export function observe(element: Element, type: string, handler: EventListener) : EventHandler {
@@ -453,6 +447,10 @@ module _ {
   export class EventHandler {
     constructor(public element: Element | Window, public type, public handler, public options) {
       this.element.addEventListener(type, handler, options);
+    }
+
+    start() {
+      this.element.addEventListener(this.type, this.handler, this.options);
     }
 
     stop() {

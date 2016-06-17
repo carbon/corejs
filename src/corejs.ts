@@ -387,6 +387,10 @@ module Carbon {
 }
 
 module _ {
+  export function serialize(obj) {
+    return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
+  }
+
   export function query(selector: string) : Element {
     return document.querySelector(selector);
   }

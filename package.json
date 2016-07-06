@@ -1,12 +1,7 @@
 {
   "name": "corejs",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "main": "lib/corejs.js",
   "author": "Jason Nelson",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/carbon/corejs.git"
-  },
-  "homepage": "https://github.com/carbon/corejs"
+  "license": "MIT"
 }

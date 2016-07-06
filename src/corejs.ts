@@ -37,7 +37,7 @@ module Carbon {
       var parts = name.split('.');
       var scope = undefined;
 
-      if(parts.length == 2) scope = parts[1];
+      if (parts.length == 2) scope = parts[1];
 
       var instance = Carbon.Reactive.get(parts[0]);
 
@@ -194,7 +194,9 @@ module Carbon {
       this.lastFired = new Date();
       this.fireCount++;
 
-      if (this.once) this.dispose();
+      if (this.once) {
+        this.dispose();
+      }
     }
 
     pause() {
@@ -273,11 +275,11 @@ module Carbon {
 
       if (!controller) throw new Error(`Controller#${controllerName} not registered`);
       
-      var func = controller[actionName];
+      var func = <Function>controller[actionName];
       
-      if (!func) throw new Error(`Action#${controllerName}:${actionName} not registered`);
+      if (!func) throw new Error(`${controllerName} is missing '${actionName}'`);
       
-      func(e);
+      func.call(controller, e);
     }
   };
 
@@ -288,7 +290,7 @@ module Carbon {
       var instance = Carbon.Template.instances.get(name);
 
       if (!instance) {
-        instance = new Carbon.Template('#' + name);
+        instance = new Carbon.Template('#' + name.replace('#', ''));
 
         Carbon.Template.instances.set(name, instance)
       }
@@ -313,7 +315,7 @@ module Carbon {
       this.content = this.element.content || this.createFragmentForChildren();
     }
 
-    createFragmentForChildren() : DocumentFragment {
+    createFragmentForChildren(): DocumentFragment {
       var frag = document.createDocumentFragment();
 
       var children = this.element.children;
@@ -327,7 +329,7 @@ module Carbon {
       return frag;
     }
 
-    render(data) : HTMLElement {
+    render(data): HTMLElement {
       var nodes = this.clone().childNodes;
 
       for (var i = 0, len = nodes.length; i < len; i++) {
@@ -387,7 +389,7 @@ module Carbon {
 }
 
 module _ {
-  export function serialize(obj) {
+  export function serialize(obj): string {
     return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
   }
 

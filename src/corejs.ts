@@ -463,4 +463,78 @@ module _ {
       this.element.removeEventListener(this.type, this.handler, this.options)
     }
   }
+
+  export var defaultHeaders = <any>{ }; 
+
+  /* fetch helpers */
+  export function putJSON(url: string, data: any): PromiseLike<any> {
+    return sendJSON(url, 'PUT', data);
+  };
+
+  export function patchJSON(url: string, data: any): PromiseLike<any> {
+    return sendJSON(url, 'PATCH', data);
+  };
+
+  export function postJSON(url: string, data: any): PromiseLike<any> {
+    return sendJSON(url, 'POST', data);
+  };
+
+  export function getHTML(url: string): PromiseLike<string> {
+    return send(url, {
+      method: 'GET',
+      headers: { 'Accept': 'text/html' }
+    }).then(response => response.text());
+  };
+
+  export function getJSON(url: string): PromiseLike<any> {
+    return send(url, { method: 'GET' }).then(response => {
+      if (!response.ok) {
+        return response.json().then(data => Promise.reject(data));
+      }
+
+      return response.json();
+    });
+  };
+
+  export function sendJSON(url: string, method: string, data: any): PromiseLike<any> {
+    return send(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(response => {
+      if (!response.ok) {
+        return response.json().then(data => Promise.reject(data));
+      }
+
+      return response.json()
+    });
+  };
+
+  export function post(url: string, options?: RequestInit): PromiseLike<Response> {
+    if (!options) options = { };
+
+    options.method = 'POST';
+
+    return send(url, options);
+  }
+
+  export function send(url: string, options: RequestInit): PromiseLike<Response> {
+    options.credentials = 'same-origin';
+
+    if (!options.headers) options.headers = { };
+    
+    for (var key of Object.keys(defaultHeaders)) {
+      if (!options.headers[key]) {
+        options.headers[key] = defaultHeaders[key];
+      }
+    }
+
+    if (!options.headers['Accept']) {
+      options.headers['Accept'] = 'application/json';
+    }
+
+    return fetch(url, options);
+  };
 }

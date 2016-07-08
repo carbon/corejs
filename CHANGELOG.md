@@ -1,3 +1,6 @@
+# 1.6.0
+-Add fetch helpers
+
 # 1.3.0
 - Remove Timer
 - Remove uses of string.contains

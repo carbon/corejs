@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "removeComments": true,
     "watch": false,
     "sourceMap": false,
-    "outDir": "lib/"
+    "outDir": "lib/",
+    "alwaysStrict": true,
+    "lib": [ "dom", "es5", "es6" ]
   },
   "files": [
-    "src/corejs.ts",
-    "src/es6.d.ts"
+    "src/corejs.ts"
   ]
 }

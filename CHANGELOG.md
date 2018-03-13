@@ -1,3 +1,6 @@
+# 2.0.0
+- Update to ES6 
+
 # 1.6.0
 -Add fetch helpers
 

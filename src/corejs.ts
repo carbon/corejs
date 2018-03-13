@@ -15,7 +15,7 @@ module Carbon {
     static instances = new Map<string, Reactive>();
 
     static once(name, callback) {
-      var sub = Carbon.Reactive.on(name, callback);
+      let sub = Carbon.Reactive.on(name, callback);
 
       sub.once = true;
 
@@ -23,23 +23,21 @@ module Carbon {
     }
 
     static on(name: string, callback: Function) {
-      var parts = name.split('.');
-      var scope = undefined;
+      let parts = name.split('.');
+      let scope = undefined;
 
       if (parts.length == 2) scope = parts[1];
 
-      var instance = Carbon.Reactive.get(parts[0]);
+      let instance = Carbon.Reactive.get(parts[0]);
 
       return instance.subscribe(callback, { scope: scope });
     }
 
     static off(name: string) {
-      var parts = name.split('.');
-      var scope = undefined;
-
-      if (parts.length == 2) scope = parts[1];
-
-      var instance = Carbon.Reactive.get(parts[0]);
+      let parts = name.split('.');
+      let scope = (parts.length == 2) ? parts[1] : undefined;
+      
+      let instance = Carbon.Reactive.get(parts[0]);
 
       for (var listener of instance.listeners) {
         if (scope && listener.scope == scope) {
@@ -52,7 +50,7 @@ module Carbon {
     }
 
     static trigger(key: string, data) {
-      var instance = Carbon.Reactive.get(key);
+      let instance = Carbon.Reactive.get(key);
 
       if (instance !== undefined) {
         instance.trigger(data);
@@ -60,7 +58,7 @@ module Carbon {
     }
 
     static get(key) : Reactive {
-      var instance = Carbon.Reactive.instances.get(key);
+      let instance = Carbon.Reactive.instances.get(key);
 
       if (instance === undefined) {
         instance = new Carbon.Reactive(key);
@@ -98,7 +96,7 @@ module Carbon {
     }
 
     subscribe(callback, options?: ListenerOptions) {
-      var listener = new Carbon.Listener(callback, this, options);
+      let listener = new Carbon.Listener(callback, this, options);
 
       this.listeners.push(listener);
 
@@ -106,7 +104,7 @@ module Carbon {
     }
 
     unsubscribe(listener) {
-      var index = this.listeners.indexOf(listener);
+      let index = this.listeners.indexOf(listener);
 
       if (index > -1) {
         this.listeners.splice(index, 1);
@@ -123,7 +121,7 @@ module Carbon {
       this.mode = null;
       
       while (this.queue.length > 0) {
-        var e = this.queue.pop();
+        let e = this.queue.pop();
         
         this.trigger(e.name, e.data);
       }
@@ -176,7 +174,7 @@ module Carbon {
         this.filter = <(e) => boolean>optionsOrFilter;
       }
       else if (optionsOrFilter) {
-        var options = <ListenerOptions>optionsOrFilter;
+        let options: ListenerOptions = optionsOrFilter;
 
   	    this.scope  = options.scope;
   	    this.filter = options.filter;
@@ -239,11 +237,11 @@ module Carbon {
     },
 
     eventListener(e) {
-      var target = _getActionElement(e.target, e.type);
+      let target = _getActionElement(e.target, e.type);
 
       if (!target) return;
 
-      var action = target.getAttribute('on-' + e.type);
+      let action = target.getAttribute('on-' + e.type);
 
       Carbon.ActionKit.execute({ target: target }, action);
     },
@@ -271,11 +269,11 @@ module Carbon {
 
       if (!controllerName) return;
 
-      var controller = Carbon.controllerFactory.get(controllerName);
+      let controller = Carbon.controllerFactory.get(controllerName);
 
       if (!controller) throw new Error(`Controller#${controllerName} not registered`);
       
-      var func = <Function>controller[actionName];
+      let func = <Function>controller[actionName];
       
       if (!func) throw new Error(`${controllerName} is missing '${actionName}'`);
       
@@ -287,7 +285,7 @@ module Carbon {
     static instances = new Map<string, Template>();
 
     static get(name: string) : Template {
-      var instance = Carbon.Template.instances.get(name);
+      let instance = Carbon.Template.instances.get(name);
 
       if (!instance) {
         instance = new Carbon.Template('#' + name.replace('#', ''));
@@ -316,9 +314,9 @@ module Carbon {
     }
 
     createFragmentForChildren(): DocumentFragment {
-      var frag = document.createDocumentFragment();
+      let frag = document.createDocumentFragment();
 
-      var children = this.element.children;
+      let children = this.element.children;
 
       for (var i = 0; i < children.length; i++) {
         var child = children[i].cloneNode(true);
@@ -330,7 +328,7 @@ module Carbon {
     }
 
     render(data): HTMLElement {
-      var nodes = this.clone().childNodes;
+      let nodes = this.clone().childNodes;
 
       for (var i = 0, len = nodes.length; i < len; i++) {
         var node = nodes[i];
@@ -338,7 +336,7 @@ module Carbon {
         // First non-text node
         if (node.nodeType != 3) {
           if (data) {
-            var result = this._replace(node.outerHTML, data);
+            let result = this._replace(node.outerHTML, data);
 
             return DOM.parse(result);
           }
@@ -379,7 +377,7 @@ module Carbon {
     // TODO: Support fragments
   
     export function parse(html: string) : HTMLElement {
-      var el = document.createElement('div');
+      let el = document.createElement('div');
       
       el.innerHTML = html;
       
@@ -467,26 +465,26 @@ module _ {
   export var defaultHeaders = <any>{ }; 
 
   /* fetch helpers */
-  export function putJSON(url: string, data: any): PromiseLike<any> {
+  export function putJSON(url: string, data: any): Promise<any> {
     return sendJSON(url, 'PUT', data);
   };
 
-  export function patchJSON(url: string, data: any): PromiseLike<any> {
+  export function patchJSON(url: string, data: any): Promise<any> {
     return sendJSON(url, 'PATCH', data);
   };
 
-  export function postJSON(url: string, data: any): PromiseLike<any> {
+  export function postJSON(url: string, data: any): Promise<any> {
     return sendJSON(url, 'POST', data);
   };
 
-  export function getHTML(url: string): PromiseLike<string> {
+  export function getHTML(url: string): Promise<string> {
     return send(url, {
       method: 'GET',
       headers: { 'Accept': 'text/html' }
     }).then(response => response.text());
   };
 
-  export function getJSON(url: string): PromiseLike<any> {
+  export function getJSON(url: string): Promise<any> {
     return send(url, { method: 'GET' }).then(response => {
       if (!response.ok) {
         return response.json().then(data => Promise.reject(data));
@@ -496,7 +494,7 @@ module _ {
     });
   };
 
-  export function sendJSON(url: string, method: string, data: any): PromiseLike<any> {
+  export function sendJSON(url: string, method: string, data: any): Promise<any> {
     return send(url, {
       method: method,
       headers: {
@@ -512,7 +510,7 @@ module _ {
     });
   };
 
-  export function post(url: string, options?: RequestInit): PromiseLike<Response> {
+  export function post(url: string, options?: RequestInit): Promise<Response> {
     if (!options) options = { };
 
     options.method = 'POST';
@@ -520,7 +518,7 @@ module _ {
     return send(url, options);
   }
 
-  export function send(url: string, options: RequestInit): PromiseLike<Response> {
+  export function send(url: string, options: RequestInit): Promise<Response> {
     options.credentials = 'same-origin';
 
     if (!options.headers) options.headers = { };

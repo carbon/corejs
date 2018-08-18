@@ -73,7 +73,6 @@ module Carbon {
       Carbon.Reactive.instances.delete(name)
     }
 
-
     key: string;
     listeners: Array<Listener> = [];
     
@@ -86,6 +85,14 @@ module Carbon {
 
     on(name: string, callback: Function) : Listener {
       return this.subscribe(callback, e => e.type == name);
+    }
+
+    off(name: string) {
+      for (var listener of Array.from(this.listeners)) {
+        if (listener.filter && listener.filter({ type: name })) {
+          listener.dispose();
+        }
+      }
     }
 
     once(name: string, callback) {
@@ -112,7 +119,9 @@ module Carbon {
         if (this.listeners.length == 0) {
           this.dispose();
 
-          if (this.key) Carbon.Reactive.remove(this.key);
+          if (this.key) { 
+            Carbon.Reactive.remove(this.key);
+          }
         }
       }
     }
@@ -135,9 +144,20 @@ module Carbon {
       
       return;
      }
+
+     if (typeof e == "string") {
+        var d = { type: e };
+
+        if (data) {
+          Object.assign(d, data);
+          data = null;
+        }
+
+        e = d;
+     }
      
-     for (var i = 0, len = this.listeners.length; i < len; i++) {
-       this.listeners[i].fire(e, data);
+     for (var listener of Array.from(this.listeners)) {
+      listener.fire(e, data);
      }
     }
 
@@ -206,6 +226,8 @@ module Carbon {
     }
 
     dispose() {
+      this.active = false;
+
       this.reactive.unsubscribe(this);
     }
   }

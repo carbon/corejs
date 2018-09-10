@@ -248,8 +248,8 @@ module Carbon {
       Carbon.ActionKit.execute(e, action);
     },
 
-    observe() {
-      for (var name of arguments) {        
+    observe(...args) {
+      for (var name of args) {        
         if (!Carbon.ActionKit.listeners.has(name)) {
           document.body.addEventListener(name, Carbon.ActionKit.eventListener);
 

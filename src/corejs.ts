@@ -248,8 +248,8 @@ module Carbon {
       Carbon.ActionKit.execute(e, action);
     },
 
-    observe(...args: string[]) {
-      for (var name of args) {
+    observe() {
+      for (var name of arguments) {        
         if (!Carbon.ActionKit.listeners.has(name)) {
           document.body.addEventListener(name, Carbon.ActionKit.eventListener);
 
@@ -283,9 +283,11 @@ module Carbon {
 
         // TODO: Parse args (arg, arg, arg)
         if (controllerName.indexOf('#') > -1) {
-          e.id = controllerName.split('#')[1];
+          var parts = controllerName.split('#');
 
-          controllerName = controllerName.split('#')[0];
+          controllerName = parts[0];
+
+          e.id = parts[1];
         }
       }
 

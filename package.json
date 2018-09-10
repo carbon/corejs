@@ -1,6 +1,6 @@
 {
   "name": "corejs",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "main": "lib/corejs.js",
   "author": "Jason Nelson",
   "license": "MIT"

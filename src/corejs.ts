@@ -14,7 +14,7 @@ module Carbon {
   export class Reactive {
     static instances = new Map<string, Reactive>();
 
-    static once(name, callback) {
+    static once(name: string, callback: Function) {
       let sub = Carbon.Reactive.on(name, callback);
 
       sub.once = true;
@@ -138,7 +138,7 @@ module Carbon {
       this.queue = null;
     }
     
-    trigger(e, data?) {
+    trigger(e, data?: any) {
      if (this.mode == 'queue') {
       this.queue.push({ name: e, data: data });
       
@@ -397,9 +397,7 @@ module Carbon {
     return null;
   };
   
-  export module DOM {
-    // TODO: Support fragments
-  
+  export module DOM {  
     export function parse(html: string) : HTMLElement {
       let el = document.createElement('div');
       

@@ -49,7 +49,7 @@ module Carbon {
       }
     }
 
-    static trigger(key: string, data) {
+    static trigger(key: string, data: any) {
       let instance = Carbon.Reactive.get(key);
 
       if (instance !== undefined) {
@@ -76,9 +76,6 @@ module Carbon {
     key: string;
     listeners: Array<Listener> = [];
     
-    mode = null;
-    queue = [ ];
-
     constructor(key?: string) {
       this.key = key;
     }
@@ -126,25 +123,7 @@ module Carbon {
       }
     }
 
-    drain() {
-      this.mode = null;
-      
-      while (this.queue.length > 0) {
-        let e = this.queue.pop();
-        
-        this.trigger(e.name, e.data);
-      }
-      
-      this.queue = null;
-    }
-    
     trigger(e, data?: any) {
-     if (this.mode == 'queue') {
-      this.queue.push({ name: e, data: data });
-      
-      return;
-     }
-
      if (typeof e == "string") {
         var d = { type: e };
 
@@ -191,7 +170,7 @@ module Carbon {
       this.callback = callback;
 
       if (typeof optionsOrFilter === 'function') {
-        this.filter = <(e) => boolean>optionsOrFilter;
+        this.filter = <(e:any) => boolean>optionsOrFilter;
       }
       else if (optionsOrFilter) {
         let options: ListenerOptions = optionsOrFilter;
@@ -275,7 +254,8 @@ module Carbon {
     },
 
     _execute(e, action: string) {
-      var controllerName, actionName;
+      var controllerName: string;
+      var actionName: string;
 
       if (action.indexOf(':') > -1) {
         controllerName = action.split(':')[0];

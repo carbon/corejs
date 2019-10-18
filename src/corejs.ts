@@ -300,27 +300,40 @@ module Carbon {
       return instance;
     }
 
-    element: any;
-    content: any;
-
-    constructor(selector) {
-      // #templateId
-      this.element = document.querySelector(selector); // NATIVE element
-
-      if(!this.element) {
-        console.log(`No template matching ${selector} found.`);
-
-        return;
-      }
-
-      // Document Fragment
-      this.content = this.element.content || this.createFragmentForChildren();
+    static parse(text: string) : Template {
+      let templateEl = document.createElement('template');
+      
+      templateEl.innerHTML = text;
+      
+      return new Template(templateEl.content);
     }
 
-    createFragmentForChildren(): DocumentFragment {
+    content: DocumentFragment;
+
+    constructor(value: String | DocumentFragment) {
+      // #templateId
+
+      if (typeof value == 'string') {
+        let element = document.querySelector(value) as HTMLTemplateElement; // NATIVE element
+
+        if (!element) {
+          console.log(`No template matching ${value} found.`);
+
+          return;
+        }
+
+        // Document Fragment
+        this.content = element.content || this.createFragmentForChildren(element);
+      }
+      else  {
+        this.content = value as DocumentFragment;
+      }
+    }
+
+    createFragmentForChildren(element: HTMLElement): DocumentFragment {
       let frag = document.createDocumentFragment();
 
-      let children = this.element.children;
+      let children = element.children;
 
       for (var i = 0; i < children.length; i++) {
         var child = children[i].cloneNode(true);
@@ -331,7 +344,7 @@ module Carbon {
       return frag;
     }
 
-    render(data): HTMLElement {
+    render(data: any): HTMLElement {
       let nodes = this.clone().childNodes;
 
       for (var i = 0, len = nodes.length; i < len; i++) {

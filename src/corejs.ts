@@ -81,7 +81,9 @@ module Carbon {
     }
 
     on(name: string, callback: Function) : Listener {
-      return this.subscribe(callback, e => e.type == name);
+      return this.subscribe(callback, { 
+        filter: e => e.type == name
+      });
     }
 
     off(name: string) {
@@ -165,7 +167,7 @@ module Carbon {
 
     active = true;
 
-    constructor(callback: Function, reactive: Reactive, optionsOrFilter: ListenerOptions|((e) => boolean)) {
+    constructor(callback: Function, reactive: Reactive, optionsOrFilter: ListenerOptions | ((e) => boolean)) {
       this.reactive = reactive;
       this.callback = callback;
 
@@ -215,7 +217,7 @@ module Carbon {
   export var ActionKit = {
     listeners: new Map<string, Function>(),
 
-    dispatch(e) {
+    dispatch(e: any) {
       let match = _getActionElement(e.target, e.type);
 
       if (!match) return;
@@ -348,7 +350,7 @@ module Carbon {
       let nodes = this.clone().childNodes;
 
       for (var i = 0, len = nodes.length; i < len; i++) {
-        var node = nodes[i];
+        var node = nodes[i] as HTMLElement;
 
         // First non-text node
         if (node.nodeType != 3) {
@@ -391,12 +393,34 @@ module Carbon {
   };
   
   export module DOM {  
-    export function parse(html: string) : HTMLElement {
-      let el = document.createElement('div');
+    export function parse(text: string) : HTMLElement {
+      let parser = new DOMParser();
+
+      let dom = parser.parseFromString(text.trim(), 'text/html');
+
+      return dom.body.childNodes[0] as HTMLElement;
+    }
+
+    export function detach(node) {
+      let parent = node.parentNode;
+  
+      if (!parent) return;
       
-      el.innerHTML = html;
+      parent.removeChild(node);
+  
+      return node;
+    }
+
+    export function onChange() {
+
+      for (let el of Array.from(document.querySelectorAll('[on-insert]'))) {
+          Carbon.ActionKit.dispatch({
+            type   : 'insert',
+            target : el
+         });
       
-      return <HTMLElement>el.firstChild;
+        el.removeAttribute('on-insert');
+      }
     }
   }
 }

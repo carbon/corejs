@@ -401,7 +401,7 @@ module Carbon {
       return dom.body.childNodes[0] as HTMLElement;
     }
 
-    export function detach(node) {
+    export function detach(node: Node) {
       let parent = node.parentNode;
   
       if (!parent) return;
@@ -409,6 +409,17 @@ module Carbon {
       parent.removeChild(node);
   
       return node;
+    }
+
+    export function beforeRemoval(element: HTMLElement) {
+      for (var el of Array.from(element.querySelectorAll('[on-unload]'))) {
+        Carbon.ActionKit.dispatch({
+          type   : 'unload',
+          target : el
+        });
+          
+        el.removeAttribute('on-unload');
+      }
     }
 
     export function onChange() {

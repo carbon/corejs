@@ -423,7 +423,6 @@ module Carbon {
     }
 
     export function onChange() {
-
       for (let el of Array.from(document.querySelectorAll('[on-insert]'))) {
           Carbon.ActionKit.dispatch({
             type   : 'insert',

@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <style>body { background-color: #ccc; } </style>
+  </head>
+	<body>
+
+  <script src="../lib/corejs.js"></script>
+
+	<script>
+	
+var reactive = new Carbon.Reactive();
+var a = 0;
+
+var t1 = reactive.on('tick', e => {
+  if (e.count >= 2) {
+    t1.dispose();
+  }
+
+  a++;
+});
+
+var t2 = reactive.on('tick', e => {
+  a++;
+});
+
+var t3 = reactive.on('tick', e => {
+  a++;
+});
+
+var t4 = reactive.on('tick', e => {
+  a++;
+});
+
+
+setTimeout(() => {
+  reactive.off('tick');
+
+  console.log(c, a);
+}, 5100);
+
+var c = 0;
+
+var i = setInterval(() => {
+  reactive.trigger('tick', {
+    count: c++
+  });
+}, 1);
+
+	</script>
+
+	</body>
+</html>

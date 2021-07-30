@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <script src="../lib/corejs.js"></script>
+  </head>
+  <body>
+    <p><a href="#" on-click="test:click">CLICK</a></p>
+
+    <script>    
+    Carbon.controllers['test'] = {
+      click(e) {
+        console.log('clicked', e);
+      }
+    };
+
+    Carbon.ActionKit.observe('click', 'click', 'mouseover');
+    </script>
+  </body>
+</html>

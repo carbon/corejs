@@ -487,12 +487,12 @@ module _ {
     }
 
     dispose() {
+      this.stop();
+
       this.element = null;
       this.type = null;
       this.handler = null;
-      this.options = null;
-      
-      this.stop();
+      this.options = null;     
     }
   }
 

@@ -436,7 +436,7 @@ module Carbon {
 }
 
 module _ {
-  export function serialize(obj): string {
+  export function serialize(obj: any): string {
     return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
   }
 
@@ -448,35 +448,11 @@ module _ {
     return Array.from(document.querySelectorAll(selector));
   }
 
-  export function trigger(el: Element | Window, name: string, detail?): boolean {
+  export function trigger(el: Element | Window, name: string, detail?: any): boolean {
     return el.dispatchEvent(new CustomEvent(name, {
       bubbles: true,
       detail: detail
     }));
-  }
-
-  export function addClass(el: Element, ...names: string[]) {
-    for (var name of names) {
-      el.classList.add(name);
-    }
-  }
-
-  export function removeClass(el: Element, ...names: string[]) {
-    for (var name of names) {
-      el.classList.remove(name);
-    }
-  }
-
-  export function toggleClass(el: Element, name: string, force?: boolean) {
-    if (force === true) {
-      el.classList.add(name);
-    }
-    else if (force === false) {
-      el.classList.remove(name);
-    }
-    else {
-      el.classList.toggle(name);
-    }
   }
 
   export function one(element: Element, type: string, listener: EventListener) {
@@ -509,6 +485,15 @@ module _ {
     stop() {
       this.element.removeEventListener(this.type, this.handler, this.options)
     }
+
+    dispose() {
+      this.element = null;
+      this.type = null;
+      this.handler = null;
+      this.options = null;
+      
+      this.stop();
+    }
   }
 
   export var defaultHeaders = <any>{ }; 
@@ -526,37 +511,43 @@ module _ {
     return sendJSON(url, 'POST', data);
   };
 
-  export function getHTML(url: string): Promise<string> {
-    return send(url, {
+  export async function getHTML(url: string): Promise<string> {
+    let response = await send(url, {
       method: 'GET',
       headers: { 'Accept': 'text/html' }
-    }).then(response => response.text());
-  };
-
-  export function getJSON(url: string): Promise<any> {
-    return send(url, { method: 'GET' }).then(response => {
-      if (!response.ok) {
-        return response.json().then(data => Promise.reject(data));
-      }
-
-      return response.json();
     });
+    
+    return await response.text();
   };
 
-  export function sendJSON(url: string, method: string, data: any): Promise<any> {
-    return send(url, {
+  export async function getJSON(url: string): Promise<any> {
+    let response = await send(url, { method: 'GET' });
+
+    let result = await response.json();
+
+    if (!response.ok) {
+      return Promise.reject(result);
+    }
+
+    return result;
+  };
+
+  export async function sendJSON(url: string, method: string, data: any): Promise<any> {
+    let response = await send(url, {
       method: method,
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
-    }).then(response => {
-      if (!response.ok) {
-        return response.json().then(data => Promise.reject(data));
-      }
-
-      return response.json()
     });
+
+    let result = await response.json();
+
+    if (!response.ok) {
+      return Promise.reject(data);
+    }
+   
+    return result;
   };
 
   export function post(url: string, options?: RequestInit): Promise<Response> {
@@ -568,8 +559,6 @@ module _ {
   }
 
   export function send(url: string, options: RequestInit): Promise<Response> {
-    options.credentials = 'same-origin';
-
     if (!options.headers) options.headers = { };
     
     for (var key of Object.keys(defaultHeaders)) {

@@ -7,7 +7,7 @@
     "sourceMap": false,
     "outDir": "lib/",
     "alwaysStrict": true,
-    "lib": [ "dom", "es5", "es6" ]
+    "lib": [ "dom", "es5", "es6", "ES2018" ]
   },
   "files": [
     "src/corejs.ts"

@@ -11,6 +11,26 @@ module Carbon {
 
   export var controllerFactory = controllers;
 
+  export class Deferred<T> {
+    promise: Promise<T>;
+    resolve: Function;
+    reject: Function;
+    then: any;
+    catch: any;
+    finally: any;
+
+    constructor() {
+      this.promise = new Promise((resolve, reject) => {
+        this.resolve = resolve;
+        this.reject = reject;
+      });
+  
+      this.then = this.promise.then.bind(this.promise);
+      this.catch = this.promise.catch.bind(this.promise);
+      this.finally = this.promise.finally.bind(this.promise);
+    }
+  }
+
   export class Reactive {
     static instances = new Map<string, Reactive>();
 
@@ -57,7 +77,7 @@ module Carbon {
       }
     }
 
-    static get(key) : Reactive {
+    static get(key: string) : Reactive {
       let instance = Carbon.Reactive.instances.get(key);
 
       if (instance === undefined) {
@@ -70,7 +90,7 @@ module Carbon {
     }
 
     static remove(key: string) {
-      Carbon.Reactive.instances.delete(name)
+      Carbon.Reactive.instances.delete(key)
     }
 
     key: string;

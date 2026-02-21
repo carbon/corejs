@@ -380,16 +380,6 @@ module _ {
     return el.dispatchEvent(new CustomEvent(name, { bubbles: true, detail }));
   }
 
-  export function one(element: Element, type: string, listener: EventListener) {
-    let observer: EventHandler;
-    let func = (e: Event) => {
-      listener(e);
-      observer?.stop();
-      observer = null;
-    };
-    observer = new EventHandler(element, type, func, false);
-  }
-
   export function observe(element: Element, type: string, handler: EventListener): EventHandler {
     return new EventHandler(element, type, handler, false);
   }
